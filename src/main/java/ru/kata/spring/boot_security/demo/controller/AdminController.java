@@ -39,7 +39,6 @@ public class AdminController {
 
     @PostMapping("/users")
     public String createUser(@ModelAttribute User user) {
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         userService.saveUser(user);
         return "redirect:/admin/users";
     }
@@ -57,7 +56,7 @@ public class AdminController {
         if (user.getPassword().isEmpty()) {
             user.setPassword(existingUser.getPassword());
         } else {
-            user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+            user.setPassword(user.getPassword());
         }
         user.setId(id);
         userService.saveUser(user);

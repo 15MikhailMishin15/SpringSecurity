@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>User Profile</title>
@@ -8,6 +8,13 @@
 <h1>User Profile</h1>
 <p>Username: <span th:text="${user.username}"></span></p>
 <p>Email: <span th:text="${user.email}"></span></p>
-<a href="/logout" th:href="@{/logout}">Logout</a>
+
+<!-- Кнопка для выхода -->
+<a href="#" th:href="@{/logout}">Logout</a>
+
+<!-- Показать кнопку "Users List" только если у пользователя роль ADMIN -->
+<div sec:authorize="hasRole('ROLE_ADMIN')">
+    <a href="#" th:href="@{/admin/users}">Users List</a>
+</div>
 </body>
 </html>

@@ -16,6 +16,11 @@
     <label for="email">Email:</label>
     <input type="email" id="email" name="email" required/>
     <br/>
+    <label for="roles">Roles:</label>
+    <select id="roles" name="roles" multiple>
+        <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
+    </select>
+    <br/>
     <button type="submit">Create User</button>
 </form>
 <a href="/admin/users">Back to Users List</a>

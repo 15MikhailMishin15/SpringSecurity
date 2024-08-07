@@ -49,6 +49,7 @@ public class DbInit {
         admin.setEmail("admin@admin.com");
         admin.setPassword(passwordEncoder.encode("100"));
         admin.getRoles().add(adminRole);
+        admin.getRoles().add(userRole);
 
         User user = new User();
         user.setUsername("user");

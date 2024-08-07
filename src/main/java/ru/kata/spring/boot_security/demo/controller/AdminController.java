@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.entity.User;
+import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
@@ -18,10 +19,12 @@ import java.util.List;
 public class AdminController {
 
     private final UserService userService;
+    private final RoleService roleService;
 
     @Autowired
-    public AdminController(UserService userService) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     @GetMapping("/users")
@@ -34,11 +37,13 @@ public class AdminController {
     @GetMapping("/users/create")
     public String createUserForm(Model model) {
         model.addAttribute("user", new User());
+        model.addAttribute("roles", roleService.findAll());
         return "user-create";
     }
 
     @PostMapping("/users")
-    public String createUser(@ModelAttribute User user) {
+    public String createUser(@ModelAttribute User user, @RequestParam List<Long> roles) {
+        user.setRoles(roleService.findByIds(roles));
         userService.saveUser(user);
         return "redirect:/admin/users";
     }
@@ -47,11 +52,12 @@ public class AdminController {
     public String editUserForm(@PathVariable Long id, Model model) {
         User user = userService.findById(id);
         model.addAttribute("user", user);
+        model.addAttribute("roles", roleService.findAll());
         return "user-update";
     }
 
     @PostMapping("/users/{id}")
-    public String updateUser(@PathVariable Long id, @ModelAttribute User user) {
+    public String updateUser(@PathVariable Long id, @ModelAttribute User user, @RequestParam List<Long> roles) {
         User existingUser = userService.findById(id);
         if (user.getPassword().isEmpty()) {
             user.setPassword(existingUser.getPassword());
@@ -59,6 +65,7 @@ public class AdminController {
             user.setPassword(user.getPassword());
         }
         user.setId(id);
+        user.setRoles(roleService.findByIds(roles));
         userService.saveUser(user);
         return "redirect:/admin/users";
     }

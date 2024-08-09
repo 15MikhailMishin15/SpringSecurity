@@ -1,9 +1,6 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -48,27 +45,12 @@ public class AdminController {
         return "user-list";
     }
 
-//    @GetMapping("/users/create")
-//    public String createUserForm(Model model) {
-//        model.addAttribute("user", new User());
-//        model.addAttribute("roles", roleService.findAll());
-//        return "user-create";
-//    }
-
     @PostMapping("/users/create")
     public String createUser(@ModelAttribute User user, @RequestParam("roles") List<Long> roles) {
         user.setRoles(roleService.findByIds(roles));
         userService.saveUser(user);
         return "redirect:/admin/users";
     }
-
-//    @GetMapping("/users/{id}/edit")
-//    public String editUserForm(@PathVariable Long id, Model model) {
-//        User user = userService.findById(id);
-//        model.addAttribute("user", user);
-//        model.addAttribute("roles", roleService.findAll());
-//        return "user-update";
-//    }
 
     @PostMapping("/users")
     public String updateUser(@ModelAttribute User user, @RequestParam List<Long> roles) {

@@ -35,9 +35,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // Хеширование пароля
-        return userRepository.save(user);
+    public void saveUser(User user) {
+        String password = user.getPassword();
+
+        // Если пароль не пустой и не является закодированным, кодируем его
+        if (password != null && !password.isEmpty() && !isPasswordEncoded(password)) {
+            user.setPassword(passwordEncoder.encode(password));
+        }
+
+        // Сохраняем пользователя
+        userRepository.save(user);
+    }
+
+    // Метод для проверки, является ли пароль закодированным
+    private boolean isPasswordEncoded(String password) {
+        // Проверяем, что строка имеет длину 60 символов и начинается с $2a$, $2b$ или $2y$
+        return password != null && password.length() == 60 &&
+                (password.startsWith("$2a$") || password.startsWith("$2b$") || password.startsWith("$2y$"));
     }
 
     @Override

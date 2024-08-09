@@ -26,10 +26,10 @@ public class DbInit {
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public DbInit(UserRepository userRepository, RoleRepository roleRepository) {
+    public DbInit(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder();
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostConstruct

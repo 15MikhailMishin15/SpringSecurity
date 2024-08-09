@@ -1,36 +1,247 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Список пользователей</title>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .navbar-custom {
+            background-color: #343a40; /* Темно-серый цвет */
+            color: #fff;
+            width: 100%;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between; /* Размещаем элементы по краям */
+            align-items: center;
+            position: fixed; /* Закрепляем панель вверху */
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000; /* Устанавливаем высокий индекс, чтобы панель была поверх контента */
+        }
+        .navbar-custom .info {
+            display: flex;
+            align-items: center;
+        }
+        .navbar-custom .info .email {
+            font-weight: bold; /* Жирный шрифт для почты */
+            margin-right: 10px; /* Расстояние между почтой и текстом с ролями */
+        }
+        .navbar-custom .info .roles {
+            font-weight: normal; /* Обычный шрифт для текста "with roles" */
+        }
+        .sidebar {
+            height: 100vh; /* Высота боковой панели на всю высоту экрана */
+            width: 250px; /* Ширина боковой панели */
+            position: fixed; /* Закрепляем боковую панель слева */
+            top: 60px; /* Отступ сверху, чтобы не перекрывать навигационную панель */
+            left: 0;
+            background-color: #f8f9fa; /* Светло-серый фон боковой панели */
+            color: #343a40; /* Цвет текста в боковой панели */
+            padding-top: 20px; /* Отступ сверху */
+            z-index: 1000; /* Устанавливаем высокий индекс, чтобы панель была поверх контента */
+            border-right: 1px solid #dee2e6; /* Граница справа для боковой панели */
+        }
+        .sidebar a {
+            color: #007bff; /* Синий цвет текста ссылок */
+            display: block; /* Отображение ссылок в блочном виде */
+            padding: 10px 15px; /* Отступ внутри ссылок */
+            text-decoration: none; /* Убираем подчеркивание ссылок */
+        }
+        .sidebar .active {
+            background-color: #007bff; /* Синий цвет для активной ссылки */
+            color: #fff; /* Белый цвет текста для активной ссылки */
+        }
+        .content-wrapper {
+            margin-top: 80px; /* Отступ для размещения контента ниже навигационной панели */
+            margin-left: 260px; /* Отступ для размещения контента справа от боковой панели */
+            padding: 20px; /* Отступ внутри контентной области */
+        }
+        .table-container {
+            margin-top: 20px; /* Отступ сверху для таблицы */
+        }
+        .table-header {
+            margin-bottom: 10px; /* Отступ снизу для заголовка таблицы */
+        }
+        .nav-tabs {
+            margin-bottom: 0; /* Убираем отступ снизу у вкладок */
+        }
+        .nav-tabs .nav-item .nav-link {
+            border: none; /* Убираем границы вкладок */
+        }
+        .nav-tabs .nav-item .nav-link.active {
+            color: #000; /* Черный цвет текста для активной вкладки */
+            background-color: #fff; /* Белый цвет фона для активной вкладки */
+        }
+        .tab-content {
+            margin-top: 20px; /* Отступ сверху для контента вкладок */
+        }
+        .btn-edit {
+            background-color: #007bff; /* Синий цвет для кнопки Edit */
+            color: #fff;
+        }
+        .btn-add-user {
+            background-color: #28a745; /* Зеленый цвет для кнопки Add new user */
+            color: #fff;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .form-container form {
+            width: 100%;
+            max-width: 600px; /* Ограничиваем максимальную ширину формы */
+            border: 1px solid #dee2e6; /* Граница формы */
+            border-radius: .25rem; /* Скругление углов формы */
+            padding: 15px; /* Отступ внутри формы */
+            background-color: #fff; /* Белый фон формы */
+        }
+        .form-container h2 {
+            text-align: left; /* Выравнивание заголовка влево */
+            font-size: 1.5rem; /* Размер шрифта заголовка */
+            margin-bottom: 20px; /* Отступ снизу от заголовка */
+        }
+        .table {
+            border-collapse: collapse; /* Сливаем границы ячеек */
+            width: 100%; /* Ширина таблицы на всю ширину контейнера */
+            border: 1px solid #dee2e6; /* Внешняя граница таблицы */
+        }
+        th, td {
+            border: 1px solid #dee2e6; /* Цвет границы */
+            padding: 8px; /* Отступ внутри ячеек */
+            text-align: center; /* Выравнивание текста по центру */
+        }
+        th {
+            background-color: #f8f9fa; /* Цвет фона для заголовков таблицы */
+        }
+        .btn-add-user {
+            margin-top: 10px; /* Отступ сверху для кнопки */
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .table .bold {
+            font-weight: bold; /* Жирный шрифт */
+        }
+        .table .no-border {
+            border: none; /* Убираем границы у строк */
+        }
+        .table .table-header-cell {
+            text-align: left; /* Выравнивание заголовка по левому краю */
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-<h1>Список пользователей</h1>
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Имя</th>
-        <th>Email</th>
-        <th>Действия</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="user : ${users}">
-        <td th:text="${user.id}"></td>
-        <td th:text="${user.username}"></td>
-        <td th:text="${user.email}"></td>
-        <td>
-            <a th:href="@{/admin/users/{id}/edit(id=${user.id})}">Редактировать</a>
-            <form th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post" style="display:inline;">
-                <button type="submit">Удалить</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
-<a href="/admin/users/create">Создать нового пользователя</a>
-<div style="margin-top: 20px;">
-    <a th:href="@{/logout}">Logout</a>
+<!-- Верхняя темно-серая панель навигации -->
+<nav class="navbar navbar-custom">
+    <div class="d-flex w-100 justify-content-between">
+        <div class="info">
+            <span class="email" th:text="${user.email}"></span>
+            <span class="roles">with roles:
+                    <span th:each="role, iterStat : ${user.roles}" th:text="${iterStat.index == 0 ? role.name : ', ' + role.name}"></span>
+                </span>
+        </div>
+        <a href="#" th:href="@{/logout}" class="btn btn-danger">Logout</a>
+    </div>
+</nav>
+
+<!-- Боковая панель -->
+<div class="sidebar">
+    <a href="http://localhost:8080/admin/users" class="active">Admin</a>
+    <a href="#" th:href="@{/admin/user}">User</a>
 </div>
+
+<div class="content-wrapper"> <!-- Контентная область -->
+    <!-- Таблица пользователей и переключатели -->
+    <div class="table-container">
+        <div class="table-header">
+            <h1>Admin Panel</h1> <!-- Заголовок страницы -->
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="users-tab" data-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="true">Users Table</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="new-user-tab" data-toggle="tab" href="#create" role="tab" aria-controls="create" aria-selected="false">New User</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Вкладка с таблицей пользователей -->
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
+                <!-- Таблица пользователей -->
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th colspan="6" class="table-header-cell">All users</th> <!-- Заголовок в первой строке таблицы -->
+                    </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Roles</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.username}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td>
+                            <span th:each="role, iterStat : ${user.roles}" th:text="${iterStat.index == 0 ? role.name : ', ' + role.name}"></span>
+                        </td>
+                        <td>
+                            <a th:href="@{/admin/user/{id}(id=${user.id})}" class="btn btn-edit">Edit</a>
+                        </td>
+                        <td>
+                            <a th:href="@{/admin/user/delete/{id}(id=${user.id})}" class="btn btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Вкладка с формой для создания нового пользователя -->
+            <div class="tab-pane fade" id="create" role="tabpanel" aria-labelledby="new-user-tab">
+                <div class="form-container">
+                    <h2>Add new user</h2> <!-- Заголовок формы -->
+                    <form th:action="@{/admin/users}" method="post">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="roles">Roles</label>
+                            <select id="roles" name="roles" class="form-control" multiple>
+                                <option th:each="role : ${roles}"
+                                        th:value="${role.id}"
+                                        th:text="${role.name}">Role</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-add-user">Add new user</button> <!-- Зеленая кнопка -->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Скрипты -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

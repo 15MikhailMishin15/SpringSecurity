@@ -23,7 +23,9 @@ public class UserController {
     public String userProfile(Model model, Authentication authentication) {
         String username = authentication.getName();
         User user = userService.findByUsername(username);
+        System.out.println("User roles: " + user.getRoles());
         model.addAttribute("user", user);
+        model.addAttribute("roles", user.getRoles());
         return "user";
     }
 }

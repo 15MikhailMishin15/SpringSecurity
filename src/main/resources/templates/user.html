@@ -1,20 +1,143 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>User Profile</title>
+    <title>User Page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .navbar-custom {
+            background-color: #343a40; /* Темно-серый цвет */
+            color: #fff;
+            width: 100%;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between; /* Размещаем элементы по краям */
+            align-items: center;
+            position: fixed; /* Закрепляем панель вверху */
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000; /* Устанавливаем высокий индекс, чтобы панель была поверх контента */
+        }
+        .navbar-custom .info {
+            display: flex;
+            align-items: center;
+        }
+        .navbar-custom .info .email {
+            font-weight: bold; /* Жирный шрифт для почты */
+            margin-right: 10px; /* Расстояние между почтой и текстом с ролями */
+            color: #fff; /* Белый цвет текста */
+        }
+        .navbar-custom .info .roles {
+            font-weight: normal; /* Обычный шрифт для текста "with roles" */
+            color: #fff; /* Белый цвет текста */
+        }
+        .navbar-custom .info .logout {
+            margin-left: 20px; /* Расстояние между почтой/ролями и кнопкой Logout */
+        }
+        .navbar-custom .btn-logout {
+            background-color: #dc3545; /* Красный цвет для кнопки Logout */
+            color: #fff;
+        }
+        .sidebar {
+            height: 100vh; /* Высота боковой панели на всю высоту экрана */
+            width: 250px; /* Ширина боковой панели */
+            position: fixed; /* Закрепляем боковую панель слева */
+            top: 60px; /* Отступ сверху, чтобы не перекрывать навигационную панель */
+            left: 0;
+            background-color: #f8f9fa; /* Светло-серый фон боковой панели */
+            color: #343a40; /* Цвет текста в боковой панели */
+            padding-top: 20px; /* Отступ сверху */
+            z-index: 1000; /* Устанавливаем высокий индекс, чтобы панель была поверх контента */
+            border-right: 1px solid #dee2e6; /* Граница справа для боковой панели */
+        }
+        .sidebar a {
+            color: #007bff; /* Синий цвет текста ссылок */
+            display: block; /* Отображение ссылок в блочном виде */
+            padding: 10px 15px; /* Отступ внутри ссылок */
+            text-decoration: none; /* Убираем подчеркивание ссылок */
+        }
+        .sidebar .active {
+            background-color: #007bff; /* Синий цвет для активной ссылки */
+            color: #fff; /* Белый цвет текста для активной ссылки */
+        }
+        .content-wrapper {
+            margin-top: 60px; /* Отступ для размещения контента ниже навигационной панели */
+            margin-left: 250px; /* Отступ для размещения контента справа от боковой панели */
+            padding: 20px; /* Отступ внутри контентной области */
+        }
+        .table-container {
+            margin-top: 20px; /* Отступ сверху для таблицы */
+        }
+        .table-header {
+            margin-bottom: 10px; /* Отступ снизу для заголовка таблицы */
+        }
+        .btn-logout {
+            background-color: #dc3545; /* Красный цвет для кнопки Logout */
+            color: #fff;
+        }
+        .table td, .table th {
+            vertical-align: middle; /* Выравнивание по центру вертикально */
+        }
+    </style>
 </head>
 <body>
-<h1>User Profile</h1>
-<p>Username: <span th:text="${user.username}"></span></p>
-<p>Email: <span th:text="${user.email}"></span></p>
+<!-- Верхняя темно-серая панель навигации -->
+<nav class="navbar navbar-custom">
+    <div class="d-flex w-100 justify-content-between">
+        <div class="info">
+            <span class="email" th:text="${user.email}"></span>
+            <span class="roles">
+                with roles:
+                <span th:each="role, iterStat : ${user.roles}" th:text="${iterStat.index == 0 ? role.name : ', ' + role.name}"></span>
+            </span>
+        </div>
+        <a href="#" th:href="@{/logout}" class="btn btn-logout">Logout</a>
+    </div>
+</nav>
 
-<!-- Кнопка для выхода -->
-<a href="#" th:href="@{/logout}">Logout</a>
-
-<!-- Показать кнопку "Users List" только если у пользователя роль ADMIN -->
-<div sec:authorize="hasRole('ROLE_ADMIN')">
-    <a href="#" th:href="@{/admin/users}">Users List</a>
+<!-- Боковая панель -->
+<div class="sidebar">
+    <!-- Кнопка Admin отображается только если роль ADMIN у пользователя -->
+    <a href="/admin/users" th:if="${roles.contains('ROLE_ADMIN')}">Admin</a>
+    <a href="#" class="active" th:href="@{/user}">User</a>
 </div>
+
+<div class="content-wrapper"> <!-- Контентная область -->
+    <!-- Заголовок страницы -->
+    <h2>User Information-page</h2>
+
+    <!-- Таблица информации пользователя -->
+    <div class="table-container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th colspan="4" class="text-left">About User</th> <!-- Строка заголовка таблицы -->
+            </tr>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Roles</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.username}"></td>
+                <td th:text="${user.email}"></td>
+                <td>
+                    <span th:each="role, iterStat : ${user.roles}" th:text="${iterStat.index == 0 ? role.name : ', ' + role.name}"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Скрипты -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -6,26 +6,26 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.kata.spring.boot_security.demo.entity.User;
-import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
+import ru.kata.spring.boot_security.demo.service.UserService;
+
+import java.security.Principal;
+import java.util.Map;
+import java.util.Set;
 
 @Controller
-@RequestMapping("/user")
+@RequestMapping({"/admin", "/user"})
 public class UserController {
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @Autowired
-    public UserController(UserServiceImpl userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping
-    public String userProfile(Model model, Authentication authentication) {
-        String username = authentication.getName();
-        User user = userService.findByUsername(username);
-        System.out.println("User roles: " + user.getRoles());
-        model.addAttribute("user", user);
-        model.addAttribute("roles", user.getRoles());
+    @GetMapping({ "", "/user" })
+    public String userProfile(Model model, Principal principal, Authentication authentication) {
+        Map<String, Object> userProfileData = userService.getUserProfileData(principal.getName());
+        model.addAllAttributes(userProfileData);
         return "user";
     }
 }

@@ -153,8 +153,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createUser(User user, List<Long> roles) {
+    public User createUser(User user, List<Long> roles) {
         user.setRoles(findRolesByIds(roles));
-        saveUser(user);
+        return userRepository.save(user); // Обновлено, чтобы возвращать сохраненного пользователя
     }
 }

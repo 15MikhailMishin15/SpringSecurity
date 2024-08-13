@@ -22,5 +22,5 @@ public interface UserService extends UserDetailsService {
     void updateUser(User user, List<Long> roles);
     Map<String, Object> getUserListData(Principal principal);
     Map<String, Object> getUserProfileData(String username);
-    void createUser(User user, List<Long> roles);
+    User createUser(User user, List<Long> roles);
 }
